@@ -269,9 +269,12 @@ function render(): void {
       "Help (toggle with h or ?)",
       "",
       "Navigation",
-      "  up/down (j/k): move selection",
+      "  up/down (j/k): move focus",
+      "  p/n: page up/down",
       "  g or Home: jump to top",
       "  G or End: jump to bottom",
+      "",
+      "Filter and view",
       "  /: search",
       "  f: show filter (active/archived/active+archived)",
       "  s: sort order (desc/asc)",
@@ -289,7 +292,9 @@ function render(): void {
       "  a: toggle archive focused",
       "  B: toggle archive selected",
       "",
-      "q: quit",
+      "Other",
+      "  h or ?: toggle help",
+      "  q: quit",
     ];
     const output = helpLines.map((line) => truncate(line, cols));
     process.stdout.write(output.join("\n"));
@@ -309,32 +314,31 @@ function render(): void {
     ? `Suggestions: ${tagSuggestions.join(", ")} (tab to autocomplete)`
     : "";
   const footerLines = 1 + (suggestionLine ? 1 : 0);
-  const headerLines = 5 + (hasStatus ? 1 : 0);
+  const headerLines = 4 + (hasStatus ? 1 : 0);
   const listSize = Math.max(1, rows - headerLines - footerLines);
 
   clearScreen();
 
   const lines: string[] = [];
   const searchLabel = state.searchQuery.trim();
-  const searchDisplay = searchLabel ? searchLabel : "none";
-  lines.push("Codex Session Manager");
+  const searchDisplay = searchLabel ? ` ${searchLabel}` : "";
   const showLabel =
     state.archiveFilter === "all" ? "active+archived" : state.archiveFilter;
   lines.push(
     truncate(
-      `Search (/): ${searchDisplay} | Show (f): ${showLabel} | Sort (s): ${state.sortOrder} | Details (d): ${state.showDetails ? "on" : "off"} | Help (h/?)`,
+      `Search (/):${searchDisplay} | Show (f): ${showLabel} | Sort (s): ${state.sortOrder} | Details (d): ${state.showDetails ? "on" : "off"} | Help (h/?)`,
       cols
     )
   );
   lines.push(
     truncate(
-      `Selected (space): ${state.selectedPaths.size} | Showing: ${state.filtered.length}/${state.sessions.length} | Nav: ↑/↓ | Top/Bottom: g/G | Quit: q`,
+      `Selected (space): ${state.selectedPaths.size} | Current: ${state.filtered.length ? state.selectedIndex + 1 : 0}/${state.filtered.length} | Showing: ${state.filtered.length}/${state.sessions.length} | Nav: ↑/↓ | Page: p/n | Top/Bottom: g/G | Quit: q`,
       cols
     )
   );
   lines.push(
     truncate(
-      "Actions: rename (r) | tags (t) | toggle focused (a) | toggle selected (B)",
+      "Actions: rename (r) | tags (t) | toggle archive focused (a) | toggle archive selected (B)",
       cols
     )
   );
@@ -510,6 +514,8 @@ async function toggleSelectedArchive(): Promise<void> {
   const selected = selectedSessions();
   if (selected.length === 0) {
     setStatus("No sessions selected.");
+    maybeLoadDetails();
+    render();
     return;
   }
   let archivedCount = 0;
@@ -544,6 +550,8 @@ async function toggleSelectedArchive(): Promise<void> {
   }
   const summary = parts.length ? parts.join(", ") : "no changes";
   setStatus(`Toggle selected: ${summary}.`);
+  maybeLoadDetails();
+  render();
 }
 
 function toggleArchiveFilter(): void {
@@ -568,6 +576,15 @@ function toggleDetails(): void {
 
 function toggleHelp(): void {
   state.showHelp = !state.showHelp;
+}
+
+function getListSize(): number {
+  const rows =
+    typeof process.stdout.rows === "number" ? process.stdout.rows : DEFAULT_ROWS;
+  const hasStatus = Boolean(state.statusMessage);
+  const headerLines = 4 + (hasStatus ? 1 : 0);
+  const footerLines = 1;
+  return Math.max(1, rows - headerLines - footerLines);
 }
 
 function maybeLoadDetails(): void {
@@ -671,6 +688,19 @@ function handleListKey(key: string): void {
     state.selectedIndex = Math.min(
       Math.max(0, state.filtered.length - 1),
       state.selectedIndex + 1
+    );
+    return;
+  }
+  if (key === "page-up") {
+    const pageSize = getListSize();
+    state.selectedIndex = Math.max(0, state.selectedIndex - pageSize);
+    return;
+  }
+  if (key === "page-down") {
+    const pageSize = getListSize();
+    state.selectedIndex = Math.min(
+      Math.max(0, state.filtered.length - 1),
+      state.selectedIndex + pageSize
     );
     return;
   }
@@ -887,6 +917,14 @@ function handleData(data: Buffer): void {
     }
     if (char === "k") {
       handleKey("up");
+      continue;
+    }
+    if (char === "p") {
+      handleKey("page-up");
+      continue;
+    }
+    if (char === "n") {
+      handleKey("page-down");
       continue;
     }
     if (char === "A") {

@@ -45,22 +45,32 @@ npm run dev
 
 ## Controls
 
-- Up/Down (j/k): select session
+Navigation
+- Up/Down (j/k): move focus
+- p/n: page up/down
+- g : jump to top
+- G : jump to bottom
+
+Filter and view
 - / : search by name or tag
 - f : show filter (active, archived, active+archived)
 - s : toggle sort order (desc/asc)
-- r : rename selected session
-- t : edit tags (comma separated)
-- a : toggle archive focused
+- d : toggle details pane
+
+Selection
 - space : toggle selection for bulk actions
 - A : select all visible
 - I : invert selection
 - C : clear selection
+
+Actions
+- r : rename session
+- t : edit tags (comma separated)
+- a : toggle archive focused
 - B : toggle archive selected
-- d : toggle details pane
+
+Other
 - h or ? : toggle help
-- g : jump to top
-- G : jump to bottom
 - q : quit
 
 Note: In-app help (h/?) includes alternate keys like Home/End and Tab.
