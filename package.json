@@ -12,6 +12,9 @@
     "dev": "tsx src/cli.ts",
     "test": "npm run build && node --test dist/tests/*.test.js"
   },
+  "engines": {
+    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.52.0",
     "@typescript-eslint/parser": "^8.52.0",

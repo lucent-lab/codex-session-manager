@@ -15,7 +15,7 @@ Simple TUI to rename, tag, and archive Codex CLI sessions stored under `~/.codex
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 18.18+ or 20.9+ (or newer)
 
 ## Install
 
