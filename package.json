@@ -1,7 +1,7 @@
 {
   "name": "codex-session-manager",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "type": "commonjs",
   "description": "Simple TUI to rename, tag, and archive Codex CLI sessions.",
   "scripts": {
@@ -12,6 +12,16 @@
     "dev": "tsx src/cli.ts",
     "test": "npm run build && node --test dist/tests/*.test.js"
   },
+  "bin": {
+    "codex-session-manager": "bin/codex-session-manager.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
   "engines": {
     "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
   },
