@@ -13,7 +13,7 @@ import {
   buildTagIndex,
   getTagSuggestions,
 } from "./ui-utils";
-import { readMessagePreview } from "./preview";
+import { readMessagePreviews } from "./preview";
 import type { ArchiveFilter, SessionRecord, SortOrder } from "./types";
 
 type InputKind = "search" | "rename" | "tags";
@@ -43,7 +43,7 @@ const state = {
   showDetails: true,
   showHelp: false,
   sortOrder: "desc" as SortOrder,
-  detailCache: new Map<string, string | null>(),
+  detailCache: new Map<string, { first: string; last: string } | null>(),
   detailState: { filePath: null, loading: false } as DetailState,
 };
 
@@ -223,7 +223,11 @@ function buildDetailLines(session: SessionRecord, width: number): string[] {
   } else if (cache.has(session.filePath)) {
     const preview = cache.get(session.filePath);
     if (preview) {
-      pushWrapped(lines, preview, width);
+      pushWrapped(lines, "First:", width);
+      pushWrapped(lines, preview.first, width);
+      lines.push("");
+      pushWrapped(lines, "Last:", width);
+      pushWrapped(lines, preview.last, width);
     } else {
       pushWrapped(lines, "(no preview available)", width);
     }
@@ -586,7 +590,7 @@ function maybeLoadDetails(): void {
     return;
   }
 
-  void readMessagePreview(session.filePath, PREVIEW_CHAR_LIMIT)
+  void readMessagePreviews(session.filePath, PREVIEW_CHAR_LIMIT)
     .then((preview) => {
       state.detailCache.set(session.filePath, preview ?? null);
       if (state.detailState.filePath === session.filePath) {

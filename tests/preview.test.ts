@@ -6,7 +6,7 @@ import test from "node:test";
 import {
   extractMessageText,
   extractPreviewFromLine,
-  readMessagePreview,
+  readMessagePreviews,
 } from "../src/preview";
 
 test("extractMessageText joins message parts", () => {
@@ -27,7 +27,7 @@ test("extractPreviewFromLine returns message preview", () => {
   assert.equal(extractPreviewFromLine(line), "Preview text");
 });
 
-test("readMessagePreview returns first message", async () => {
+test("readMessagePreviews returns first and last messages", async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), "codex-preview-"));
   const filePath = path.join(dir, "session.jsonl");
   const lines = [
@@ -37,11 +37,29 @@ test("readMessagePreview returns first message", async () => {
     JSON.stringify({ payload: { type: "message", content: [{ text: "Later message" }] } }),
   ];
   await writeFile(filePath, `${lines.join("\n")}\n`, "utf8");
-  const preview = await readMessagePreview(filePath, 20);
-  assert.equal(preview, "Hello world");
+  const previews = await readMessagePreviews(filePath, 20);
+  assert.deepEqual(previews, {
+    first: "Hello world",
+    last: "Later message",
+  });
 });
 
-test("readMessagePreview returns null when no messages", async () => {
+test("readMessagePreviews returns same first and last for single message", async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), "codex-preview-single-"));
+  const filePath = path.join(dir, "session.jsonl");
+  const lines = [
+    JSON.stringify({ type: "session_meta", payload: { id: "1" } }),
+    JSON.stringify({ payload: { type: "message", content: [{ text: "Only message" }] } }),
+  ];
+  await writeFile(filePath, `${lines.join("\n")}\n`, "utf8");
+  const previews = await readMessagePreviews(filePath, 50);
+  assert.deepEqual(previews, {
+    first: "Only message",
+    last: "Only message",
+  });
+});
+
+test("readMessagePreviews returns null when no messages", async () => {
   const dir = await mkdtemp(path.join(os.tmpdir(), "codex-preview-empty-"));
   const filePath = path.join(dir, "session.jsonl");
   const lines = [
@@ -49,6 +67,6 @@ test("readMessagePreview returns null when no messages", async () => {
     JSON.stringify({ payload: { type: "event", content: [] } }),
   ];
   await writeFile(filePath, `${lines.join("\n")}\n`, "utf8");
-  const preview = await readMessagePreview(filePath, 50);
-  assert.equal(preview, null);
+  const previews = await readMessagePreviews(filePath, 50);
+  assert.equal(previews, null);
 });

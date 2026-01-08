@@ -16,6 +16,11 @@ type JsonLine = {
   payload?: MessagePayload;
 };
 
+export type MessagePreview = {
+  first: string;
+  last: string;
+};
+
 function normalizeWhitespace(text: string): string {
   return text.replace(/\s+/g, " ").trim();
 }
@@ -75,24 +80,38 @@ function truncate(text: string, maxChars: number): string {
   return `${text.slice(0, maxChars - 3)}...`;
 }
 
-export async function readMessagePreview(
+export async function readMessagePreviews(
   filePath: string,
   maxChars: number
-): Promise<string | null> {
+): Promise<MessagePreview | null> {
   const stream = createReadStream(filePath, { encoding: "utf8" });
   const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
+  let first: string | null = null;
+  let last: string | null = null;
 
   try {
     for await (const line of rl) {
       const preview = extractPreviewFromLine(line);
-      if (preview) {
-        return truncate(preview, maxChars);
+      if (!preview) {
+        continue;
       }
+      if (!first) {
+        first = preview;
+      }
+      last = preview;
     }
   } finally {
     rl.close();
     stream.destroy();
   }
 
-  return null;
+  if (!first) {
+    return null;
+  }
+
+  const safeLast = last ?? first;
+  return {
+    first: truncate(first, maxChars),
+    last: truncate(safeLast, maxChars),
+  };
 }

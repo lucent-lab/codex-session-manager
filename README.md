@@ -4,14 +4,13 @@ Simple TUI to rename, tag, and archive Codex CLI sessions stored under `~/.codex
 
 ## What it does
 
-- Navigate sessions with arrow keys
-- Rename sessions (stored as `title` and `name` in the session metadata line)
-- Update tags (stored as `tags` array in the session metadata line)
-- Archive/unarchive sessions (move files between `~/.codex/sessions` and `~/.codex/archived_sessions`)
-- Search by name or tags and filter by archive status
-- Toggle a details pane with metadata and a preview of the first message
-- Tag autocomplete in the tag editor (press Tab)
-- Toggle archive status for selected sessions
+- Browse sessions with a focused cursor and optional bulk selection
+- Rename sessions and edit tags
+- Archive or unarchive sessions
+- Search by name or tag and filter by archive status
+- Toggle a details pane with metadata and previews of the first and last messages
+- Tag autocomplete in the tag editor
+- Bulk toggle archive status for selected sessions
 
 ## Requirements
 
