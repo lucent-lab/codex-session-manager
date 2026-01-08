@@ -60,7 +60,7 @@ Filter and view
 Selection
 - space : toggle selection for bulk actions
 - A : select all visible
-- I : invert selection
+- I (capital i): invert selection
 - C : clear selection
 
 Actions
@@ -80,6 +80,7 @@ Note: In-app help (h/?) includes alternate keys like Home/End and Tab.
 - Session metadata is stored in the first JSON line (`session_meta`) inside each `.jsonl` file.
 - This tool adds or updates `title`, `name`, and `tags` in that line.
 - Archiving moves files into `~/.codex/archived_sessions` and restoring moves them back into the date-based folder.
+- Windows: Works in Windows Terminal or PowerShell 7+ (ANSI + raw mode). Session data still lives under `%USERPROFILE%\.codex`.
 
 ## Example use cases
 

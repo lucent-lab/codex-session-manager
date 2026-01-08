@@ -283,7 +283,7 @@ function render(): void {
       "Selection",
       "  space or Tab: toggle selected session",
       "  A: select all visible",
-      "  I: invert selection (visible)",
+      "  I (capital i): invert selection (visible)",
       "  C: clear selection",
       "",
       "Actions",
