@@ -1,0 +1,23 @@
+{
+  "name": "codex-session-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Simple TUI to rename, tag, and archive Codex CLI sessions.",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . --ext .ts",
+    "start": "node dist/src/cli.js",
+    "dev": "tsx src/cli.ts",
+    "test": "npm run build && node --test dist/tests/*.test.js"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
+    "@types/node": "^25.0.3",
+    "eslint": "^9.39.2",
+    "tsx": "^4.21.0",
+    "typescript": "5.9.3"
+  }
+}
